@@ -1,6 +1,6 @@
 import os
 import subprocess
-from MK_read.main import dump_dat
+from .MK_read.main import dump_dat
 from pathlib import Path
 
 def convert(tar_file,typelabel_dat):
