@@ -1,3 +1,4 @@
+import os
 """
 Creatd on Sun Aug 7 2021
 
@@ -15,7 +16,9 @@ Output:
 # WRITE LAMMPS BONDED DATA FILE AFTER REPLACING WITH LABELS (version 2)
 ##################################################################
 def write_LAMMPS_bonded_label_v2(filename,num_atom,num_bond,num_angle,num_dihedral,num_atom_type,num_bond_type,num_angle_type,num_dihedral_type, \
-       xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,atom,bond_label,bond,angle_label,angle,dihedral_label,dihedral):
+       xlo,xhi,ylo,yhi,zlo,zhi,labels,atom,bond_label,bond,angle_label,angle,dihedral_label,dihedral):
+    if os.path.exists(filename):
+        raise RuntimeError ("Refusing to overwrite "+filename)
     with open(filename,'w') as fout:
         fout.write('LAMMPS data with labels (Moon-ki Choi/Ilia Nikiforov) \n\n')
         # Box information 

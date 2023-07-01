@@ -13,9 +13,8 @@ from .write_LAMMPS_data import write_LAMMPS_bonded_label_v2
 
 def dump_dat(dat_in,dat_out):
     """ Read LAMMPS bonded file """ 
-    print_flag = 0
     num_atom,num_bond,num_angle,num_dihedral,num_atom_type,num_bond_type,num_angle_type,num_dihedral_type, \
-            xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,pair_coeff,atom,bond_coeff,bond_label,bond,angle_coeff,angle_label,angle,dihedral_coeff,dihedral_label,dihedral,element_iff_dict = read_LAMMPS_bonded(dat_in,print_flag)
+            xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,pair_coeff,atom,bond_coeff,bond_label,bond,angle_coeff,angle_label,angle,dihedral_coeff,dihedral_label,dihedral = read_LAMMPS_bonded(dat_in)
 
     """ Create label list for atoms """
     label_list = []
@@ -162,4 +161,4 @@ def dump_dat(dat_in,dat_out):
 
     """ Write LAMMPS data file with labels """     
     write_LAMMPS_bonded_label_v2(dat_out,num_atom,num_bond,num_angle,num_dihedral,num_atom_type,num_bond_type,num_angle_type,num_dihedral_type, \
-            xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,atom,bond_label,bond,angle_label,angle,dihedral_label,dihedral)
+            xlo,xhi,ylo,yhi,zlo,zhi,labels,atom,bond_label,bond,angle_label,angle,dihedral_label,dihedral)

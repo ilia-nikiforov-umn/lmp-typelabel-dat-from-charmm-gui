@@ -12,31 +12,11 @@ Output:
 @author: Moon-ki Choi, Ilia Nikiforov
 """
 import numpy as np
-from typing import Tuple
-import re
-
-def get_iff_element_from_comment(comment: str)-> Tuple[str,str]:
-    """
-    Get IFF atom type to chemical element mapping
-    
-    Args:
-        comment:
-            CHARMM-GUI data file atom comment string, e.g. 'NM-1-TSR001-CA1-ICA_S'
-    Returns:
-        * IFF atom type, e.g 'ICA_S'
-        * Corresponding chemical element name, e.g. 'Ca'
-    """
-    comment_split = comment.split("-")
-    # remove numbers
-    element = re.sub(r'[0-9]','',comment_split[-2])
-    # regular capitalization
-    element = element[0]+element[1:].lower()
-    return comment_split[-1],element
 
 ##################################################################
 # READ LAMMPS BONDED DATA FILE
 ##################################################################
-def read_LAMMPS_bonded(filename,print_flag):
+def read_LAMMPS_bonded(filename):
     """ Read LAMMPS topology file """
     fopen = open(filename, "r")
     
@@ -128,7 +108,6 @@ def read_LAMMPS_bonded(filename,print_flag):
             if (curr_line_split[0] == 'Atoms'): 
                 fopen.readline()
                 atom = np.zeros((num_atom,6))
-                iff_element_dict = {}
                 for i in range(num_atom):
                     curr_line = fopen.readline()
                     curr_line_split = curr_line.split()
@@ -138,11 +117,8 @@ def read_LAMMPS_bonded(filename,print_flag):
                     atom[i,3] = np.double(curr_line_split[4]) # x_position
                     atom[i,4] = np.double(curr_line_split[5]) # y_position
                     atom[i,5] = np.double(curr_line_split[6]) # z_position
-                    iff_atomname, element = get_iff_element_from_comment(curr_line_split[-1])
-                    iff_element_dict[iff_atomname]=element
                 # End of atoms
                 eof_atom = 1  
-                assert(len(iff_element_dict)==num_atom_type)
 
     if num_bond_type == 0:                   
         bond_coeff = []
@@ -280,98 +256,6 @@ def read_LAMMPS_bonded(filename,print_flag):
                     eof_dihedral = 1              
         
     fopen.close()
-    
-
-    num_print = 6; # Number of example that will be printed
-    if (print_flag == 1):
-        print("num_atom: ",num_atom)
-        print("num_bond: ",num_bond)
-        print("num_angle: ",num_angle)
-        print("num_dihedral: ",num_dihedral)
-        print("num_atom_type: ",num_atom_type)
-        print("num_bond_type: ",num_bond_type)
-        print("num_angle_type: ",num_angle_type)
-        print("num_dihedral_type: ",num_dihedral_type)
-        print("")
-        #formatted_xlo = "{:.2f}".format(a_float)
-        print("xlo: ",xlo," xhi: ",xhi)
-        print("ylo: ",ylo," yhi: ",yhi)
-        print("zlo: ",zlo," zhi: ",zhi)
-        print("")
-        print("Masses")
-        print(mass[0]," ",mass[1]," ",mass[2],"...")
-        print("...")
-        print("Pair Coeffs")
-        for i in range(num_print):
-            num_pro = 2; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(pair_coeff[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(pair_coeff[i,j])
-        print("...")
-        print("Atoms")
-        for i in range(num_print):
-            num_pro = 6; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(atom[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(atom[i,j])
-        print("...")
-        print("Bond Coeffs")
-        for i in range(num_print):
-            num_pro = 2; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(bond_coeff[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(bond_coeff[i,j])
-        print("...")
-        print("Bonds")
-        for i in range(num_print):
-            num_pro = 3; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(bond[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(bond[i,j])
-        print("...")
-        print("Angle coeffs")
-        for i in range(num_print):
-            num_pro = 4; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(angle_coeff[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(angle_coeff[i,j])
-        print("...")
-        print("Angles")
-        for i in range(num_print):
-            num_pro = 4; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(angle[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(angle[i,j])
-        print("...")
-        print("Dihedral Coeffs")
-        for i in range(num_print):
-            num_pro = 4; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(dihedral_coeff[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(dihedral_coeff[i,j])
-        print("...")
-        print("Dihedrals")
-        for i in range(num_print):
-            num_pro = 4; # Number of properties 
-            for j in range(num_pro):
-                if j < num_pro-1:
-                    print(dihedral[i,j],end=" ")
-                if j == num_pro-1:    
-                    print(dihedral[i,j])
 
     return num_atom,num_bond,num_angle,num_dihedral,num_atom_type,num_bond_type,num_angle_type,num_dihedral_type, \
-           xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,pair_coeff,atom,bond_coeff,bond_label,bond,angle_coeff,angle_label,angle,dihedral_coeff,dihedral_label,dihedral,iff_element_dict
+           xlo,xhi,ylo,yhi,zlo,zhi,mass,labels,pair_coeff,atom,bond_coeff,bond_label,bond,angle_coeff,angle_label,angle,dihedral_coeff,dihedral_label,dihedral
